@@ -2,8 +2,10 @@
 using FirstAPI.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient; // Import MySQL Connector
 using System.Text;
 using System.Security.Cryptography;
+using System.Diagnostics.Metrics;
 
 namespace FirstAPI.Repositories
 {
@@ -27,6 +29,7 @@ namespace FirstAPI.Repositories
                 newUser.LastName = user.LastName;
                 newUser.Email = user.Email;
                 newUser.PasswordHash = newUser.PasswordHash = HashPassword(user.Password); ;
+                newUser.Role = user.Role;
                 newUser.ProfilePicture = user.ProfilePicture;
                 newUser.Bio = user.Bio;
 

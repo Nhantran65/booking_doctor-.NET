@@ -9,6 +9,7 @@ public class User
 {
     [Key]
     [Column("id")]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [Required(ErrorMessage = "FirstName is required")]
@@ -30,6 +31,10 @@ public class User
     [Required(ErrorMessage = "Password is required")]
     [Column("password_hash")]
     public string? PasswordHash { get; set; }
+
+    [Column("role")]
+    public UserRole Role { get; set; }
+
 
     [Column("profile_picture")]
     public string? ProfilePicture { get; set; }

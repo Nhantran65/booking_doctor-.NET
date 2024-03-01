@@ -15,6 +15,8 @@ namespace FirstAPI.Dao
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = " ";
 
+        public UserRole Role { get; set; } 
+
         public string? ProfilePicture { get; set; }
 
         public string? Bio { get; set; }
