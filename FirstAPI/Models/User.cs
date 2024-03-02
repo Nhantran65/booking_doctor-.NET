@@ -32,10 +32,6 @@ public class User
     [Column("password_hash")]
     public string? PasswordHash { get; set; }
 
-    [Column("role")]
-    public UserRole Role { get; set; }
-
-
     [Column("profile_picture")]
     public string? ProfilePicture { get; set; }
 

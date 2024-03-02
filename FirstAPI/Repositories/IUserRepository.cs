@@ -15,5 +15,7 @@ namespace FirstAPI.Repositories
 
         Task<User?> Create(UserDAO user);
 
+        Task<string> Login(LoginDAO login);
+
     }
 }

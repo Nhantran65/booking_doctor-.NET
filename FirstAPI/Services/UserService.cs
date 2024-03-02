@@ -28,5 +28,20 @@ namespace FirstAPI.Services
             //Thực hiện thêm mới user
             return await _repository.Create(user); // Sử dụng await để chờ hoàn thành phương thức Create
         }
+
+        public async Task<string> Login(LoginDAO login)
+        {
+            var existinguserbyemail = await _repository.GetByEmail(login.Email ?? "");
+
+            if (existinguserbyemail == null)
+            {
+                throw new ArgumentException("user is not found ");
+            }
+
+            //thực hiện login nếu user found
+            return await _repository.Login(login); // sử dụng await để chờ hoàn thành phương thức create
+        }
+
+ 
     }
 }

@@ -36,7 +36,22 @@ namespace FirstAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDAO login)
+        {
+            try
+            {
+                // Gọi phương thức Register trong IUserService để xử lý đăng ký người dùng
+                string jwtToken = await _userService.Login(login);
 
+                // Trả về dữ liệu người dùng đã đăng ký thành công
+                return Ok(new { jwtToken });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 
     }

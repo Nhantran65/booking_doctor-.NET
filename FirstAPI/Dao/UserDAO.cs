@@ -13,9 +13,7 @@ namespace FirstAPI.Dao
         public string Email { get; set; } = " ";
 
         [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; } = " ";
-
-        public UserRole Role { get; set; } 
+        public string PasswordHash { get; set; } = " ";
 
         public string? ProfilePicture { get; set; }
 

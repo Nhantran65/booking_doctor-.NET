@@ -1,21 +1,24 @@
 ﻿using FirstAPI.Dao;
 using FirstAPI.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient; // Import MySQL Connector
 using System.Text;
 using System.Security.Cryptography;
 using System.Diagnostics.Metrics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FirstAPI.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly BookingDoctorContext _context;
-
-        public UserRepository(BookingDoctorContext context)
+        private readonly IConfiguration _configuration;
+        public UserRepository(BookingDoctorContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
 
@@ -28,8 +31,7 @@ namespace FirstAPI.Repositories
                 newUser.FirstName = user.FirstName;
                 newUser.LastName = user.LastName;
                 newUser.Email = user.Email;
-                newUser.PasswordHash = newUser.PasswordHash = HashPassword(user.Password); ;
-                newUser.Role = user.Role;
+                newUser.PasswordHash = newUser.PasswordHash = HashPassword(user.PasswordHash);
                 newUser.ProfilePicture = user.ProfilePicture;
                 newUser.Bio = user.Bio;
 
@@ -46,6 +48,43 @@ namespace FirstAPI.Repositories
                 return null;
             }
         }
+
+        public async Task<string> Login(LoginDAO login)
+        {
+            try
+            {
+                User? user = await _context.Users.FirstOrDefaultAsync(u => u.Email == login.Email);
+
+                if (user != null && VerifyPassword(login.PasswordHash, user.PasswordHash))
+                {
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var key = Encoding.ASCII.GetBytes(_configuration["Jwt:SecretKey"] ?? "");
+                    var tokenDescription = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new Claim[]
+                        {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        }),
+                        Expires = DateTime.UtcNow.AddDays(30),
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+                    };
+                    var token = tokenHandler.CreateToken(tokenDescription);
+                    var jwtToken = tokenHandler.WriteToken(token);
+                    return jwtToken;
+                }
+                else
+                {
+                    throw new ArgumentException("Wrong email or password");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
 
         private string? HashPassword(string password)
         {
